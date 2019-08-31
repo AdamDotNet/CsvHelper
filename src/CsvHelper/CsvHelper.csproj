@@ -1,6 +1,6 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net45;net46;net47;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;net46;net47;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>CsvHelper</AssemblyName>
     <RootNamespace>CsvHelper</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>

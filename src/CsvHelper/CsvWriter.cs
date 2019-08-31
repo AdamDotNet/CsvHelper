@@ -594,5 +594,26 @@ namespace CsvHelper
 			context = null;
 			disposed = true;
 		}
-	}
+
+#if NETSTANDARD2_1
+        public virtual async ValueTask DisposeAsync()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            await FlushAsync();
+
+            if (serializer is object)
+            {
+                await serializer.DisposeAsync().ConfigureAwait(false);
+            }
+
+            serializer = null;
+            context = null;
+            disposed = true;
+        }
+#endif
+    }
 }

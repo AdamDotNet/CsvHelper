@@ -151,13 +151,28 @@ namespace CsvHelper
 
 			context = null;
 			disposed = true;
-		}
+        }
 
-		/// <summary>
-		/// Sanitizes the field to prevent injection.
-		/// </summary>
-		/// <param name="field">The field to sanitize.</param>
-		protected virtual string SanitizeForInjection(string field)
+#if NETSTANDARD2_1
+        public virtual async ValueTask DisposeAsync()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            await context.DisposeAsync().ConfigureAwait(false);
+
+            context = null;
+            disposed = true;
+        }
+#endif
+
+        /// <summary>
+        /// Sanitizes the field to prevent injection.
+        /// </summary>
+        /// <param name="field">The field to sanitize.</param>
+        protected virtual string SanitizeForInjection(string field)
 		{
 			if (string.IsNullOrEmpty(field))
 			{
