@@ -416,6 +416,8 @@ namespace CsvHelper
         /// <param name="records">The list of records to write.</param>
         public virtual void WriteRecords<T>(IEnumerable<T> records)
         {
+            // Changes in this method require changes in method WriteRecordsAsync<T>( IEnumerable<T> records ) also.
+
             try
             {
                 // Write the header. If records is a List<dynamic>, the header won't be written.
@@ -446,6 +448,8 @@ namespace CsvHelper
         /// <param name="records">The list of records to write.</param>
         public virtual async Task WriteRecordsAsync<T>(IEnumerable<T> records)
         {
+            // Changes in this method require changes in method WriteRecords<T>( IEnumerable<T> records ) also.
+
             try
             {
                 // Write the header. If records is a List<dynamic>, the header won't be written.
@@ -469,34 +473,38 @@ namespace CsvHelper
             await WriteRecordsCoreAsync(records).ConfigureAwait(false);
         }
 
+        private void WriteRecordsHeader<T>(T record)
+        {
+            if (record is IDynamicMetaObjectProvider dynamicObject)
+            {
+                WriteDynamicHeader(dynamicObject);
+            }
+            else
+            {
+                // If records is a List<dynamic>, the header hasn't been written yet.
+                // Write the header based on the record type.
+                var recordType = record.GetType();
+                var isPrimitive = recordType.GetTypeInfo().IsPrimitive;
+                if (!isPrimitive)
+                {
+                    WriteHeader(recordType);
+                }
+            }
+        }
+
         private void WriteRecordsCore<T>(IEnumerable<T> records)
         {
-            // Changes in this method require changes in method WriteRecordsCoreAsync<T>( IEnumerable<T> records ) also.
-
             try
             {
                 using (var enumerator = records.GetEnumerator())
                 {
                     if (enumerator.MoveNext())
                     {
-                        var record = enumerator.Current;
-                        var recordType = record.GetType();
-                        if (record is IDynamicMetaObjectProvider dynamicObject)
+                        if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten)
                         {
-                            if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten)
+                            WriteRecordsHeader(enumerator.Current);
+                            if (context.HasHeaderBeenWritten)
                             {
-                                WriteDynamicHeader(dynamicObject);
-                                NextRecord();
-                            }
-                        }
-                        else
-                        {
-                            // If records is a List<dynamic>, the header hasn't been written yet.
-                            // Write the header based on the record type.
-                            var isPrimitive = recordType.GetTypeInfo().IsPrimitive;
-                            if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten && !isPrimitive)
-                            {
-                                WriteHeader(recordType);
                                 NextRecord();
                             }
                         }
@@ -526,32 +534,17 @@ namespace CsvHelper
 
         private async Task WriteRecordsCoreAsync<T>(IEnumerable<T> records)
         {
-            // Changes in this method require changes in method WriteRecordsCore<T>( IEnumerable<T> records ) also.
-
             try
             {
                 using (var enumerator = records.GetEnumerator())
                 {
                     if (enumerator.MoveNext())
                     {
-                        var record = enumerator.Current;
-                        var recordType = record.GetType();
-                        if (record is IDynamicMetaObjectProvider dynamicObject)
+                        if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten)
                         {
-                            if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten)
+                            WriteRecordsHeader(enumerator.Current);
+                            if (context.HasHeaderBeenWritten)
                             {
-                                WriteDynamicHeader(dynamicObject);
-                                await NextRecordAsync().ConfigureAwait(false);
-                            }
-                        }
-                        else
-                        {
-                            // If records is a List<dynamic>, the header hasn't been written yet.
-                            // Write the header based on the record type.
-                            var isPrimitive = recordType.GetTypeInfo().IsPrimitive;
-                            if (context.WriterConfiguration.HasHeaderRecord && !context.HasHeaderBeenWritten && !isPrimitive)
-                            {
-                                WriteHeader(recordType);
                                 await NextRecordAsync().ConfigureAwait(false);
                             }
                         }
