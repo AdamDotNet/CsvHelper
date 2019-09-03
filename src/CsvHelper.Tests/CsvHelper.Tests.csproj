@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <!--<TargetFrameworks>netstandard1.5;net20;net35;net40;net45;net451;portable-net40+sl5+win8+wpa81+wp8</TargetFrameworks>-->
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>CsvHelper.Tests</AssemblyName>
     <RootNamespace>CsvHelper.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>

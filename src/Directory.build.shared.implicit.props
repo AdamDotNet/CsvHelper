@@ -31,7 +31,7 @@
   
   <!-- CSharp language -->
   <PropertyGroup>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <!-- Enforce portable pdb format -->

@@ -10,7 +10,7 @@ using CsvHelper.Configuration;
 
 namespace CsvHelper.Tests.Mocks
 {
-	public class SerializerMock : ISerializer
+	public class SerializerMock : ISerializer, IAsyncDisposable
 	{
 		private readonly List<string[]> records = new List<string[]>();
 		private readonly bool throwExceptionOnWrite;
@@ -49,6 +49,11 @@ namespace CsvHelper.Tests.Mocks
 		public void Dispose()
 		{
 		}
+
+        public ValueTask DisposeAsync()
+        {
+            return new ValueTask(Task.CompletedTask);
+        }
 
 		public Task WriteAsync( string[] record )
 		{

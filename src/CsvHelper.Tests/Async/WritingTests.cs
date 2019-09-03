@@ -16,35 +16,33 @@ namespace CsvHelper.Tests.Async
 		[TestMethod]
 		public async Task WritingTest()
 		{
-			using (var stream = new MemoryStream())
-			using (var reader = new StreamReader(stream))
-			using (var writer = new StreamWriter(stream))
-			using (var csv = new CsvWriter(writer))
+            using var stream = new MemoryStream();
+            using var reader = new StreamReader(stream);
+            await using var writer = new StreamWriter(stream);
+            await using var csv = new CsvWriter(writer);
+			csv.Configuration.Delimiter = ",";
+			var records = new List<Simple>
 			{
-				csv.Configuration.Delimiter = ",";
-				var records = new List<Simple>
-				{
-					new Simple { Id = 1, Name = "one" },
-					new Simple { Id = 2, Name = "two" },
-				};
-				csv.WriteHeader<Simple>();
+				new Simple { Id = 1, Name = "one" },
+				new Simple { Id = 2, Name = "two" },
+			};
+			csv.WriteHeader<Simple>();
+			await csv.NextRecordAsync();
+			foreach (var record in records)
+			{
+				csv.WriteRecord(record);
 				await csv.NextRecordAsync();
-				foreach (var record in records)
-				{
-					csv.WriteRecord(record);
-					await csv.NextRecordAsync();
-				}
-
-				writer.Flush();
-				stream.Position = 0;
-
-				var expected = new StringBuilder();
-				expected.AppendLine("Id,Name");
-				expected.AppendLine("1,one");
-				expected.AppendLine("2,two");
-
-				Assert.AreEqual(expected.ToString(), reader.ReadToEnd());
 			}
+
+			await writer.FlushAsync();
+			stream.Position = 0;
+
+			var expected = new StringBuilder();
+			expected.AppendLine("Id,Name");
+			expected.AppendLine("1,one");
+			expected.AppendLine("2,two");
+
+			Assert.AreEqual(expected.ToString(), reader.ReadToEnd());
 		}
 
 		private class Simple
