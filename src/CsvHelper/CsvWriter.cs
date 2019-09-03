@@ -605,7 +605,7 @@ namespace CsvHelper
 
             await FlushAsync();
 
-            if (serializer is object)
+            if (context?.LeaveOpen is false && serializer is object)
             {
                 await serializer.DisposeAsync().ConfigureAwait(false);
             }

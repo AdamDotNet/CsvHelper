@@ -146,7 +146,7 @@ namespace CsvHelper
 
 			if (disposing)
 			{
-				context.Dispose();
+				context?.Dispose();
 			}
 
 			context = null;
@@ -161,7 +161,10 @@ namespace CsvHelper
                 return;
             }
 
-            await context.DisposeAsync().ConfigureAwait(false);
+            if (context?.LeaveOpen is false)
+            {
+                await context.DisposeAsync().ConfigureAwait(false);
+            }
 
             context = null;
             disposed = true;
