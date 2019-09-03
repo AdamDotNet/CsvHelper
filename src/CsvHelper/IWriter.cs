@@ -49,5 +49,18 @@ namespace CsvHelper
 		/// <typeparam name="T">Record type.</typeparam>
 		/// <param name="records">The list of records to write.</param>
 		void WriteRecords<T>( IEnumerable<T> records );
-	}
+
+        /// <summary>
+        /// Writes the list of records to the CSV file asynchronously.
+        /// </summary>
+        /// <param name="records">The list of records to write.</param>
+        Task WriteRecordsAsync(IEnumerable records);
+
+        /// <summary>
+        /// Writes the list of records to the CSV file.
+        /// </summary>
+        /// <typeparam name="T">Record type.</typeparam>
+        /// <param name="records">The list of records to write.</param>
+        Task WriteRecordsAsync<T>(IEnumerable<T> records);
+    }
 }
